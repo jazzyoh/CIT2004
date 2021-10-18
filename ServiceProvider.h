@@ -62,7 +62,6 @@ public:
 	}
 
 	void viewCustomerBase(){ //This should be Overridden
-		ifstream readfileStream;
 	}
 
 	void createPhoneCard(){
