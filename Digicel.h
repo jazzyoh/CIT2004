@@ -1,13 +1,15 @@
 #ifndef  DIGICEL_H
 #define  DIGICEL_H
 
+#include <iostream>
+
 #include "ServiceProvider.h"
 
-class Digicel{
+using namespace std;
+
+class Digicel :public ServiceProvider{
+
+
 
 };
-
-
-
-
 #endif
