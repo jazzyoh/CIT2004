@@ -51,7 +51,7 @@ public:
 	}
 
 	void viewCompanyInfo(){ //This should be Overridden
-		cout << "Company Infromation \n"<< endl;
+		cout << "Company Information \n"<< endl;
 	}
 	
 	void addCustomer(string trn,string lastName,string clientAddress){
@@ -65,25 +65,30 @@ public:
 	}
 
 	void createPhoneCard(){
-		const int MAX_LENGTH = 13;
-		const string cardNumSet[] = {"1","2","3","4","5","6","7","8","9","0"};
 		string buffer;
-		
-		cout <<"Creating Phone card ";
-		for(int i = 0; i<=MAX_LENGTH; i++){
-			buffer += cardNumSet[rand()%sizeof(cardNumSet)-1];
-			cout <<"...";
-		}
-		cout <<"\n\n" << endl;
+		int hold;
+		random_device rand; //Getting a random number
+		mt19937 generate(rand()); //Random number generator 
+		uniform_int_distribution<> distribution(0,9); //random number range definition
 
+		for(int i=0;i <=12;i++){
+			hold = (distribution(generate)); //assigning random number to hold
+			buffer += to_string(hold); //type casting hold to string and storing it in buffer
+		}
+
+		cout <<"\n\n" << endl;
 		this->creditNumber = buffer;
-		cout << "New Phone Card is: " << this->creditNumber << "\n\n" <<endl;
+			cout << "New Phone Card is: " << this->creditNumber << "\n\n" <<endl;
+	}
+
+	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should how all customers
+		cout <<"Total Number of Customers: are\n\n"<< endl;
+		return this->totalNoCustomer;
 	}
 
 	void viewAllPhoneCredit(){ //This should be Overridden // should be reading from file
 		cout << "Displaying all Created Phone Credits\n" << endl;
 		
-
 	}
 
 	void setPassword(string password){
