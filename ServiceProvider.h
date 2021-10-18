@@ -4,7 +4,6 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <fstream>
 
 using namespace std;
 
@@ -35,10 +34,11 @@ public:
 		password = "null";
 		prefix = "null";
 		totalNoCustomer+=1;
+		customerNumber = "null";
 	}
 
 	ServiceProvider(string companyId,string companyAddress,string clientAddress, string trn,string lastName
-							,string creditNumber,string password,string prefix,int totalNoCustomer){
+							,string creditNumber,string password,string prefix,string customerNumber,int totalNoCustomer){
 		this->companyAddress = companyId;
 		this->clientAddress = clientAddress;
 		this->trn = trn;
@@ -46,6 +46,7 @@ public:
 		this->creditNumber = creditNumber;
 		this->password = password;
 		this->prefix = prefix;
+		this->customerNumber = customerNumber;
 		this->totalNoCustomer = totalNoCustomer;
 
 	}
@@ -54,7 +55,7 @@ public:
 		cout << "Company Information \n"<< endl;
 	}
 	
-	void addCustomer(string trn,string lastName,string clientAddress){
+	void addCustomer(string trn,string lastName,string clientAddress,string customerNumber){//This should be Overridden
 		this->trn = trn;
 		this->lastName = lastName;
 		this->clientAddress = clientAddress;
@@ -67,7 +68,9 @@ public:
 	void createPhoneCard(){
 		string buffer;
 		int hold,choice;
-		const int demoniation[4]={100,200,500,1000};
+		const int demoniation[]={100,200,500,1000};
+		const string status[] = {"Used","Available"} ;
+
 		
 		try{
 			cout << "Create Phone Card\n\n" <<
@@ -106,12 +109,13 @@ public:
 		}
 
 		buffer += to_string(demoniation[choice-1]); //casting the value of each credit to the end of the card number;
+		buffer+= ("\t"+status[1]);// Appending Status to credit number 
 		cout <<"\n\n" << endl;
 		this->creditNumber = buffer;
-		cout << "New Phone Card is: " << this->creditNumber << "\n\n" <<endl;
+		cout << "New Phone Card is: " << this->creditNumber<<"\n\n" <<endl;	
 	}
 
-	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should how all customers
+	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should show all customers from each base 
 		cout <<"Total Number of Customers: are\n\n"<< endl;
 		return this->totalNoCustomer;
 	}
