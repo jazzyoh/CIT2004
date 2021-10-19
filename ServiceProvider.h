@@ -12,16 +12,19 @@ class ServiceProvider: public exception{
 private:
 	string companyId;
 	string companyAddress;
-	string clientAddress;
 	static int totalNoCustomer;
-	string trn;
-	string lastName;
 	string creditNumber;
 	string password;
-	string prefix;
+	
 
 protected:
 	string customerNumber;
+	//string prefix; // not on uml 
+	string trn;
+	string clientAddress;
+	string lastName;
+	int customerBalance;
+
 public:
 
 	ServiceProvider(){
@@ -32,22 +35,24 @@ public:
 		lastName = "null";
 		creditNumber = "null";
 		password = "null";
-		prefix = "null";
+		//prefix = "null";
 		totalNoCustomer+=1;
 		customerNumber = "null";
+		customerBalance = 0;
 	}
 
 	ServiceProvider(string companyId,string companyAddress,string clientAddress, string trn,string lastName
-							,string creditNumber,string password,string prefix,string customerNumber,int totalNoCustomer){
+							,string creditNumber,string password,string prefix,string customerNumber,int totalNoCustomer,int customerBalance){
 		this->companyAddress = companyId;
 		this->clientAddress = clientAddress;
 		this->trn = trn;
 		this->lastName = lastName;
 		this->creditNumber = creditNumber;
 		this->password = password;
-		this->prefix = prefix;
+		//this->prefix = prefix;
 		this->customerNumber = customerNumber;
 		this->totalNoCustomer = totalNoCustomer;
+		this->customerBalance = customerBalance;
 
 	}
 
@@ -55,10 +60,10 @@ public:
 		cout << "Company Information \n"<< endl;
 	}
 	
-	void addCustomer(string trn,string lastName,string clientAddress,string customerNumber){//This should be Overridden
-		this->trn = trn;
-		this->lastName = lastName;
-		this->clientAddress = clientAddress;
+	void addCustomer(){//This should be Overridden
+		
+		
+		
 	}
 
 	void viewCustomerBase(){ //This should be Overridden
@@ -69,7 +74,6 @@ public:
 		int hold,choice;
 		const int demoniation[]={100,200,500,1000};
 		const string status[] = {"Used","Available"} ;
-
 		
 		try{
 			cout << "Create Phone Card\n\n" <<
@@ -81,8 +85,9 @@ public:
 			cin >> choice;
 			if(cin.fail())
 				throw runtime_error("Value not Expected");
-			if(choice != 1 || choice != 2 ||  choice != 3 || choice != 4 )
+			else if(choice != 1 || choice != 2 ||  choice != 3 || choice != 4 )
 				throw -1;
+
 		}catch(runtime_error &err){
 			cerr << err.what() << endl;
 		}catch(int &err){
@@ -91,8 +96,8 @@ public:
 			cerr << "A fatal error has occurred "<< endl;
 			return;
 		}
-		int sentenel;
 
+		int sentenel;
 		if(choice == 4)
 			sentenel=8;	
 		else
@@ -107,7 +112,7 @@ public:
 			buffer += to_string(hold); //type casting hold to string and storing it in buffer
 		}
 
-		buffer += to_string(demoniation[choice-1]); //casting the value of each credit to the end of the card number;
+		buffer += to_string(demoniation[choice-1]); //casting the value of each credit to string 
 		buffer+= ("\t"+status[1]);// Appending Status to credit number 
 		cout <<"\n\n" << endl;
 		this->creditNumber = buffer;
@@ -121,7 +126,6 @@ public:
 
 	void viewAllPhoneCredit(){ //This should be Overridden // should be reading from file
 		cout << "Displaying all Created Phone Credits\n" << endl;
-		
 	}
 
 	void setPassword(string password){
@@ -164,18 +168,16 @@ public:
 		return trn;
 	}
 
-	void setPrefix(string prefix){
-		this->prefix = prefix;
-	}
+//	void setPrefix(string prefix){
+//		this->prefix = prefix;
+//	}
 
-	string getPrefix(){
-		return prefix;
-	}
-	~ServiceProvider();
+//	string getPrefix(){
+//		return prefix;
+//	}
+	~ServiceProvider(){};
 };
 
 int ServiceProvider::totalNoCustomer = 0;
-
-
 
 #endif
