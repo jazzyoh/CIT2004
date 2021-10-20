@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include "Customer.h"
 
 using namespace std;
 
@@ -13,66 +14,38 @@ private:
 	string companyId;
 	string companyAddress;
 	static int totalNoCustomer;
-	string creditNumber;
-	string password;
-	
-
+	string password;	
 protected:
-	string customerNumber;
-	//string prefix; // not on uml 
-	string trn;
-	string clientAddress;
-	string lastName;
-	int customerBalance;
-
+	Customer customer;
+	string creditCard;
 public:
 
 	ServiceProvider(){
 		companyId = "null";
 		companyAddress = "null";
-		clientAddress = "null";
-		trn = "string";
-		lastName = "null";
-		creditNumber = "null";
 		password = "null";
-		//prefix = "null";
 		totalNoCustomer+=1;
-		customerNumber = "null";
-		customerBalance = 0;
 	}
 
-	ServiceProvider(string companyId,string companyAddress,string clientAddress, string trn,string lastName
-							,string creditNumber,string password,string prefix,string customerNumber,int totalNoCustomer,int customerBalance){
+	ServiceProvider(string companyId,string companyAddress,string password, int totalNoCustomer, Customer *_customer){
 		this->companyAddress = companyId;
-		this->clientAddress = clientAddress;
-		this->trn = trn;
-		this->lastName = lastName;
-		this->creditNumber = creditNumber;
 		this->password = password;
-		//this->prefix = prefix;
-		this->customerNumber = customerNumber;
 		this->totalNoCustomer = totalNoCustomer;
-		this->customerBalance = customerBalance;
-
 	}
 
-	void viewCompanyInfo(){ //This should be Overridden
-		cout << "Company Information \n"<< endl;
+	virtual void viewCompanyInfo(){ //This should be Overridden
 	}
 	
-	void addCustomer(){//This should be Overridden
-		
-		
-		
+	virtual void addCustomer(){//This should be Overridden
 	}
 
-	void viewCustomerBase(){ //This should be Overridden
+	virtual void viewCustomerBase(){ //This should be Overridden
 	}
 
 	void createPhoneCard(){
 		string buffer;
 		int hold,choice;
-		const int demoniation[]={100,200,500,1000};
+		const string demoniation[]={"100","200","500","1000"};
 		const string status[] = {"Used","Available"} ;
 		
 		try{
@@ -85,7 +58,7 @@ public:
 			cin >> choice;
 			if(cin.fail())
 				throw runtime_error("Value not Expected");
-			else if(choice != 1 || choice != 2 ||  choice != 3 || choice != 4 )
+			else if(choice != 1 && choice != 2 &&  choice != 3 && choice != 4 )
 				throw -1;
 
 		}catch(runtime_error &err){
@@ -96,7 +69,6 @@ public:
 			cerr << "A fatal error has occurred "<< endl;
 			return;
 		}
-
 		int sentenel;
 		if(choice == 4)
 			sentenel=8;	
@@ -112,11 +84,12 @@ public:
 			buffer += to_string(hold); //type casting hold to string and storing it in buffer
 		}
 
-		buffer += to_string(demoniation[choice-1]); //casting the value of each credit to string 
+		buffer += demoniation[choice-1];
 		buffer+= ("\t"+status[1]);// Appending Status to credit number 
 		cout <<"\n\n" << endl;
-		this->creditNumber = buffer;
-		cout << "New Phone Card is: " << this->creditNumber<<"\n\n" <<endl;	
+		this->creditCard = buffer;
+		cout << "New Phone Card is: " << this->creditCard<<"\n\n" <<endl;	
+		saveCardTopUpDetails();
 	}
 
 	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should show all customers from each base 
@@ -124,8 +97,9 @@ public:
 		return this->totalNoCustomer;
 	}
 
-	void viewAllPhoneCredit(){ //This should be Overridden // should be reading from file
+	virtual void viewAllPhoneCredit(){ //This should be Overridden // should be reading from file
 		cout << "Displaying all Created Phone Credits\n" << endl;
+
 	}
 
 	void setPassword(string password){
@@ -152,20 +126,12 @@ public:
 		return companyAddress;
 	}
 
-	void setClientAddress(string clientAddress){
-		this->clientAddress = clientAddress;
+	void saveCustomerDetails(){
+
 	}
 
-	string getClientAddress(){
-		return clientAddress;
-	}
+	void saveCardTopUpDetails(){
 
-	void setTrn(string trn){
-		this->trn = trn;
-	}
-
-	string getTrn(){
-		return trn;
 	}
 
 //	void setPrefix(string prefix){

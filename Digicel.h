@@ -42,7 +42,6 @@ public:
 					}else{
 						 customerBalance += 100;
 					 	 cout << "Customer Account was created and $100 was added" << endl;
-
 					}
 
 
