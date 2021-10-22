@@ -1,6 +1,7 @@
-#ifndef CUSTOMER_H
-#define CUSTOMER_H
+#ifndef  CUSTOMER_H
+#define  CUSTOMER_H
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -30,12 +31,12 @@ public:
 		this->creditBalance = creditBalance;
 	}
 
-	void addCredit(){
-		cout << ""  << endl;
-
+	void addCredit(int credit){
+		creditBalance += credit;
+		cout << "\nCredit Added\n" << endl;
 	}
 	void checkBalance(){
-
+		cout << lastName << "'s"<< " Credit Balance is: " << creditBalance << "\n"<< endl;
 	}
 
 	void setTrn(string trn){
@@ -50,7 +51,7 @@ public:
 		this->lastName= lastName; 
 	}
 
-	string getLastName(string lastName){
+	string getLastName(){
 		return lastName;
 	}
 
@@ -73,10 +74,6 @@ public:
 	int getCreditBalance(){
 		return creditBalance;
 	}
-
-
-
-
 };
 
 

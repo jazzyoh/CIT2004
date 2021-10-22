@@ -1,3 +1,4 @@
+/*
 #ifndef  DIGICEL_H
 #define  DIGICEL_H
 
@@ -56,3 +57,4 @@ public:
 
 };
 #endif
+*/

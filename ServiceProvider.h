@@ -2,6 +2,7 @@
 #define  SERVICEPROVIDER_H
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <string>
 #include "Customer.h"
@@ -27,20 +28,26 @@ public:
 		totalNoCustomer+=1;
 	}
 
-	ServiceProvider(string companyId,string companyAddress,string password, int totalNoCustomer, Customer *_customer){
+	ServiceProvider(string companyId,string companyAddress,string password, int totalNoCustomer, Customer *customer){
 		this->companyAddress = companyId;
 		this->password = password;
 		this->totalNoCustomer = totalNoCustomer;
+		this->customer.setTrn(customer->getTrn());
+		this->customer.setLastName(customer->getLastName());
+		this->customer.setAddress(customer->getAddress());
+		this->customer.setPhoneNumber(customer->getPhoneNumber());
 	}
 
-	virtual void viewCompanyInfo(){ //This should be Overridden
-	}
-	
-	virtual void addCustomer(){//This should be Overridden
-	}
+	virtual void viewCompanyInfo() {};
+	virtual void viewAllPhoneCredit() {};
+	virtual void findCustomer(){};
+	virtual void updateCustomer(){};
+	virtual void addCustomer() {};
+	virtual void viewCustomer() {};
+	virtual void saveCustomerDetails() {};
+	virtual void saveCardTopUpDetails() {};
+//	virtual Customer getCustomer(){ return customer; };
 
-	virtual void viewCustomerBase(){ //This should be Overridden
-	}
 
 	void createPhoneCard(){
 		string buffer;
@@ -61,6 +68,29 @@ public:
 			else if(choice != 1 && choice != 2 &&  choice != 3 && choice != 4 )
 				throw -1;
 
+			else{
+			int sentinel;
+			if(choice == 4)
+				sentinel=8;	
+			else
+				sentinel = 9;
+			
+			random_device rand; //Getting a random number
+			mt19937 generate(rand()); //Random number generator 
+			uniform_int_distribution<> distribution(0,9); //random number range definition
+
+			for(int i=0;i <=sentinel;i++){
+				hold = (distribution(generate)); //assigning random number to hold
+				buffer += to_string(hold); //type casting hold to string and storing it in buffer
+			}
+			buffer += demoniation[choice-1];
+			buffer+= ("\t"+status[1]);// Appending Status to credit number 
+			cout <<"\n\n" << endl;
+			this->creditCard = buffer;
+			cout << "New Phone Card is: " << this->creditCard<<"\n\n" <<endl;	
+		}
+
+
 		}catch(runtime_error &err){
 			cerr << err.what() << endl;
 		}catch(int &err){
@@ -69,27 +99,7 @@ public:
 			cerr << "A fatal error has occurred "<< endl;
 			return;
 		}
-		int sentenel;
-		if(choice == 4)
-			sentenel=8;	
-		else
-			sentenel = 9;
 		
-		random_device rand; //Getting a random number
-		mt19937 generate(rand()); //Random number generator 
-		uniform_int_distribution<> distribution(0,9); //random number range definition
-
-		for(int i=0;i <=sentenel;i++){
-			hold = (distribution(generate)); //assigning random number to hold
-			buffer += to_string(hold); //type casting hold to string and storing it in buffer
-		}
-
-		buffer += demoniation[choice-1];
-		buffer+= ("\t"+status[1]);// Appending Status to credit number 
-		cout <<"\n\n" << endl;
-		this->creditCard = buffer;
-		cout << "New Phone Card is: " << this->creditCard<<"\n\n" <<endl;	
-		saveCardTopUpDetails();
 	}
 
 	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should show all customers from each base 
@@ -97,16 +107,12 @@ public:
 		return this->totalNoCustomer;
 	}
 
-	virtual void viewAllPhoneCredit(){ //This should be Overridden // should be reading from file
-		cout << "Displaying all Created Phone Credits\n" << endl;
-
-	}
 
 	void setPassword(string password){
 		this->password = password;
 	}
 
-	string getPassword(){
+	virtual string getPassword(){
 		return password;
 	}
 
@@ -114,7 +120,7 @@ public:
 		this->companyId = companyId;
 	}
 
-	string getCompanyId(){
+	virtual string getCompanyId(){
 		return companyId;
 	}
 
@@ -122,17 +128,23 @@ public:
 		this->companyAddress = companyAddress;
 	}
 	
-	string getComapnyAddress(){
+	virtual string getComapnyAddress(){
 		return companyAddress;
 	}
-
-	void saveCustomerDetails(){
-
+	virtual string getCustomerName(){
+		return customer.getLastName();	
+	}
+	virtual string getCustomerTrn(){
+		return customer.getTrn();
+	}
+	virtual string getCustomerPhone(){
+		return customer.getAddress();
+	}
+	virtual int getCustomerBalance(){
+		return customer.getCreditBalance();
 	}
 
-	void saveCardTopUpDetails(){
 
-	}
 
 //	void setPrefix(string prefix){
 //		this->prefix = prefix;
