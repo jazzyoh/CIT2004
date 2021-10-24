@@ -35,6 +35,7 @@ public:
 		creditBalance += credit;
 		cout << "\nCredit Added\n" << endl;
 	}
+
 	void checkBalance(){
 		cout << lastName << "'s"<< " Credit Balance is: " << creditBalance << "\n"<< endl;
 	}
