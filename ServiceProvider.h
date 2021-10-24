@@ -46,7 +46,10 @@ public:
 	virtual void viewCustomer() {};
 	virtual void saveCustomerDetails() {};
 	virtual void saveCardTopUpDetails() {};
-//	virtual Customer getCustomer(){ return customer; };
+	virtual void addCredit(){};
+	//virtual void updateCustomer(){};
+	//virtual void updateCardInfo(){};
+	//virtual Customer getCustomer(){ return customer; };
 
 
 	void createPhoneCard(){
@@ -143,8 +146,6 @@ public:
 	virtual int getCustomerBalance(){
 		return customer.getCreditBalance();
 	}
-
-
 
 //	void setPrefix(string prefix){
 //		this->prefix = prefix;

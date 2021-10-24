@@ -14,64 +14,53 @@ public:
 	Flow(){
 		this->parentCompany = "null";
 	}
+
 	Flow(string parentCompany){
 		this->parentCompany =  parentCompany;
 	}
-	void setCustomer(Customer customer){
-		this->customer = customer;
-	}
-
 
 	void setParentCompany(string parentCompany){
-		  this->parentCompany = parentCompany;
+		this->parentCompany = parentCompany;
 	}
 
-	 string getParentCompany(){
-		  return parentCompany;
-	 }
+	string getParentCompany(){
+		return parentCompany;
+	}
 
-	 void addCustomer(){// Save to a file
-	 	string detailBuffer;
-		const string prefix[4] = {"601","602","603","604"};
+	void addCustomer(){// Save to a file
+		string detailBuffer;
+		string addressBuffer ;
+		string phoneBuffer;
 		try{
-				cout << "Enter Customer Infromation:\n "<< endl;
-				cout << "Enter Trn: " ;
-				getline(cin,detailBuffer);
-				cout << "\n";
-				customer.setTrn(detailBuffer);
-				cout << "\n";
-				cout << "Enter Last Name: ";
-				cout << "\n";
-				getline(cin,detailBuffer);
-				customer.setLastName(detailBuffer);
-
+				cout << "\nEnter Customer Infromation:\n "<< endl;
+				cout << "\nEnter Trn: " ;
+				cin >>detailBuffer;
 				if(cin.fail()){
 					throw runtime_error("There was an input error");
 				}
 
-				cout << "\nEnter Customer Address: " << endl;
-				getline(cin,detailBuffer);
-				customer.setAddress(detailBuffer);
+				customer.setTrn(detailBuffer);
+				cout << "\nEnter Last Name: ";
+				cin >> detailBuffer;
+				if(cin.fail()){
+					throw runtime_error("There was an input error");
+				}
+				customer.setLastName(detailBuffer);
 
+				cout << "\nEnter Customer Address: ";
+				getline(cin,addressBuffer); //doesnt work otherwise 
+				getline(cin,addressBuffer);
+				customer.setAddress(addressBuffer);
 				if(cin.fail()){
 					throw runtime_error("There was an input error");
 				}
 
 				cout << "\nEnter Customer Number \nImportant Details\n"<<
 								"Area Code (876)\nPrefix (601,602,603,604): " ;
-				getline(cin,detailBuffer);
+				getline(cin,phoneBuffer);
+				
+					checkPhoneNumber(phoneBuffer);
 
-				if(detailBuffer.length()!= 10 ){ //First checking the length,then the areacode then the prefix
-					throw runtime_error("Not a valid phone number");
-				}else if(detailBuffer.substr(0,3) != "876"){
-					throw runtime_error("Areacode not registered") ;
-					}else if(detailBuffer.substr(3,3)!=prefix[0] && detailBuffer.substr(3,3)!=prefix[1] && 
-								detailBuffer.substr(3,3)!=prefix[2] && detailBuffer.substr(3,3)!=prefix[3]){
-						throw runtime_error("Prefix not registered");
-					}
-				else{
-					customer.setPhoneNumber(detailBuffer);
-				}
 		}catch(runtime_error &err){
 				cerr << err.what() << endl;
 				throw;
@@ -79,11 +68,16 @@ public:
 				cerr << "A fatal error has occurred" << endl;
 				throw;
 		}
+	customer.setPhoneNumber(phoneBuffer);
 	customer.setCreditBalance(100);
 	saveCustomerDetails();
 	cout << "Customer Account was created and $100 was added" << endl;
 	
 }
+
+	void setCustomer(Customer customer){
+		this->customer = customer;
+	}
 
 	void saveCustomerDetails(){
 		ofstream writeFileStream;
@@ -108,34 +102,78 @@ public:
 		cout << "\n\nCard Infromation Saved\n"<<endl; 
 	}
 	
-	void findCustomer(string search){
+	bool findCustomer(string search){
 		ifstream readFileStream;
-		string buffer(NULL);
+		string nameBuffer;
+		string trnBuffer;
+		string addressBuffer;
+		string phoneBuffer;
 		int creditBuffer;
 		readFileStream.open("Flow_Customers",ios::in);
 		
 		while(!readFileStream.eof()){
-			readFileStream >> buffer;
-			customer.setTrn(buffer);
-			readFileStream >> buffer;
-			customer.setLastName(buffer);
-			readFileStream >> buffer;
-			customer.setAddress(buffer);
-			readFileStream >> buffer;
-			customer.setPhoneNumber(buffer);
+
+			readFileStream >> trnBuffer;
+			customer.setTrn(trnBuffer);
+			readFileStream >> nameBuffer;
+			customer.setLastName(nameBuffer);
+			readFileStream >> addressBuffer;
+			customer.setAddress(addressBuffer);
+			readFileStream >> phoneBuffer;
+			customer.setPhoneNumber(phoneBuffer);
 			readFileStream >> creditBuffer; 
 			customer.setCreditBalance(creditBuffer);
-			if(buffer == search){
-				customer.setTrn(buffer);
-				
-			setCustomer(customer);
+			if(phoneBuffer == search){
+				cout  << "\nCustomer Found\n" << endl;
+				return true;
 			}
 		}
+		customer.setAddress("null");
+		customer.setCreditBalance(0);
+		customer.setLastName("null");
+		customer.setPhoneNumber("null");
+		customer.setTrn("null");
+		return  false;
 	}
+
+	void addCredit(){
+		const string sign="*121*";
+		string number;
+		string delimiter = "*";
+
+		cout << "\n\nEnter Credit Number\n" <<
+				"Important Details\n" <<
+				"*121*[card number]*[phone number]#: ";
+		getline(cin,number);
+		
+		for(int i = 0; true ; i++){
+			number.substr(i,number.find(delimiter));
+
+		}
 		
 
+	}
 
-
+	void checkPhoneNumber(string phoneBuffer){
+		const string prefix[4] = {"601","602","603","604"};
+	
+		try{
+			if(phoneBuffer.length()!= 10 ){ //First checking the length,then the areacode then the prefix
+				throw runtime_error("Not a valid phone number");
+			}else if(phoneBuffer.substr(0,3) != "876"){
+				throw runtime_error("Areacode not registered") ;
+				}else if(phoneBuffer.substr(3,3)!=prefix[0] && phoneBuffer.substr(3,3)!=prefix[1] && 
+							phoneBuffer.substr(3,3)!=prefix[2] && phoneBuffer.substr(3,3)!=prefix[3]){
+					throw runtime_error("Prefix not registered");
+				}
+			}catch(runtime_error &err){
+					cerr << err.what() << endl;
+					throw;
+			}catch(...){
+					cerr << "A fatal error has occurred" << endl;
+					throw;
+			}
+	}
 
 };
 #endif

@@ -1,4 +1,4 @@
-/*
+
 #ifndef  DIGICEL_H
 #define  DIGICEL_H
 
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class Digicel :public ServiceProvider{
+class Digicel :public ServiceProvider{/*
 private:
 	 int branchNumber;
 	 const string prefix[4] =  {"301","302","303","304"};
@@ -53,8 +53,7 @@ public:
 		  }
 		   	 }
 
-
+*/
 
 };
 #endif
-*/
