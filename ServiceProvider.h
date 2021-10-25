@@ -40,16 +40,15 @@ public:
 		this->customer.setPhoneNumber(customer->getPhoneNumber());
 	}
 
-	virtual void viewCompanyInfo();
-	virtual void viewAllPhoneCredit();
-	virtual void findCustomer();
-	virtual void updateCustomer();
-	virtual void addCustomer();
-	virtual void viewCustomer();
-	virtual void saveCustomerDetails();
-	virtual void saveCardTopUpDetails();
-	virtual void addCredit();
-	virtual bool findCard(string);
+	//virtual void viewCompanyInfo();
+	//virtual void viewAllPhoneCredit();
+	bool findCustomer(string);
+	virtual void addCustomer(){totalNoCustomer++;};
+	//virtual void viewCustomer();
+	void saveCustomerDetails();
+	void saveCardTopUpDetails();
+	void addCredit();
+	bool findCard(string);
 	//virtual void updateCustomer(string){};
 	//virtual void updateCardInfo(string){};
 	//virtual Customer getCustomer(){ return customer; };
@@ -155,7 +154,6 @@ public:
 //	string getPrefix(){
 //		return prefix;
 //	}
-	~ServiceProvider(){};
 };
 
 int ServiceProvider::totalNoCustomer = 0;

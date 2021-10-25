@@ -28,6 +28,7 @@ public:
 	}
 
 	void addCustomer(){
+		ServiceProvider::addCustomer();
 		string detailBuffer;
 		string addressBuffer ;
 		string phoneBuffer;
@@ -147,14 +148,13 @@ public:
 					"Important Details\n" <<
 					"*121*[card number]*[phone number]#: ";
 			getline(cin,number);
+			getline(cin,number);
 
 			if(cin.fail()){
 				throw runtime_error("\nValue not Expected\n");
-			}
-			
-			if(number.length()!=30){
-				throw runtime_error("Invaild Input Please\n\nFollow Outline\n");
-			}else if(number.substr(0,4)!= sign){
+			}else if(number.length()!=30){
+				throw runtime_error("Invaild Input\n\nPlease Follow Outline\n");
+			}else if(number.substr(0,5)!= sign){
 				throw runtime_error("\nIncorrect Sign\n");
 			}else if(findCard(number.substr(5,13)) == false){
 				throw runtime_error("\nCard Not Valid\n");

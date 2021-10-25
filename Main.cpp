@@ -1,6 +1,5 @@
 #include <iostream>
 #include "ServiceProvider.h"
-#include "Digicel.h"
 #include "Flow.h"
 
 using namespace std;
@@ -9,7 +8,7 @@ int main(){
 	
 	string section;
 	Flow *flow = new Flow();
-	Digicel *digicel = new Digicel();
+	//Digicel *digicel = new Digicel();
 	
 	cout << "admin - Admin" << endl;
 	cout << "customer - Customer" << endl; //Needs error handling 
