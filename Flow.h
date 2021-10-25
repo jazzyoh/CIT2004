@@ -27,7 +27,7 @@ public:
 		return parentCompany;
 	}
 
-	void addCustomer(){// Save to a file
+	void addCustomer(){
 		string detailBuffer;
 		string addressBuffer ;
 		string phoneBuffer;
@@ -59,7 +59,7 @@ public:
 								"Area Code (876)\nPrefix (601,602,603,604): " ;
 				getline(cin,phoneBuffer);
 				
-					checkPhoneNumber(phoneBuffer);
+				checkPhoneNumber(phoneBuffer);
 
 		}catch(runtime_error &err){
 				cerr << err.what() << endl;
@@ -68,12 +68,13 @@ public:
 				cerr << "A fatal error has occurred" << endl;
 				throw;
 		}
-	customer.setPhoneNumber(phoneBuffer);
-	customer.setCreditBalance(100);
-	saveCustomerDetails();
-	cout << "Customer Account was created and $100 was added" << endl;
+		customer.setPhoneNumber(phoneBuffer);
+		customer.setCreditBalance(100);
+		saveCustomerDetails();
+		//ServiceProvider::totalNoCustomer++;
+		cout << "Customer Account was created and $100 was added" << endl;
 	
-}
+	}
 
 	void setCustomer(Customer customer){
 		this->customer = customer;
@@ -89,6 +90,7 @@ public:
 		writeFileStream.close();
 		cout << "\n\nCustomer Infromation Saved\n" << endl;
 	}
+
 	void createPhoneCard(){
 		ServiceProvider::createPhoneCard();
 		saveCardTopUpDetails();
@@ -124,7 +126,6 @@ public:
 			readFileStream >> creditBuffer; 
 			customer.setCreditBalance(creditBuffer);
 			if(phoneBuffer == search){
-				cout  << "\nCustomer Found\n" << endl;
 				return true;
 			}
 		}
@@ -136,28 +137,73 @@ public:
 		return  false;
 	}
 
-	void addCredit(){
+	void addCredit(){//Note When updating the card the denomiation is either the last 3 or 4 digits of the card number 
 		const string sign="*121*";
 		string number;
-		string delimiter = "*";
+		//012345678901234567890123456789
+		//*121*1234567890987*8766011234#
+		try{
+			cout << "\n\nEnter Credit Number\n" <<
+					"Important Details\n" <<
+					"*121*[card number]*[phone number]#: ";
+			getline(cin,number);
 
-		cout << "\n\nEnter Credit Number\n" <<
-				"Important Details\n" <<
-				"*121*[card number]*[phone number]#: ";
-		getline(cin,number);
-		
-		for(int i = 0; true ; i++){
-			number.substr(i,number.find(delimiter));
+			if(cin.fail()){
+				throw runtime_error("\nValue not Expected\n");
+			}
+			
+			if(number.length()!=30){
+				throw runtime_error("Invaild Input Please\n\nFollow Outline\n");
+			}else if(number.substr(0,4)!= sign){
+				throw runtime_error("\nIncorrect Sign\n");
+			}else if(findCard(number.substr(5,13)) == false){
+				throw runtime_error("\nCard Not Valid\n");
+			}else if(findCustomer(number.substr(19,10)) == false){
+				throw runtime_error("\nCustomer Number not found\n");
+			}else if (number.substr(29,0) != "#"){
+				throw runtime_error("# Expected at the end ");
+			}
 
+		}catch(runtime_error &err){
+			cerr << err.what() << endl;
+		}catch(...){
+			cerr << "A fatal error has occurred "<< endl;
 		}
-		
 
+		if(creditCard.substr(7,0) == "0"){
+			customer.addCredit(1000);
+		}else if (creditCard.substr(7,0) == "1"){
+			customer.addCredit(100);
+		}else if (creditCard.substr(7,0) == "2"){
+			customer.addCredit(200);
+		}else if (creditCard.substr(7,0) == "5"){
+			customer.addCredit(500);
+		}
+		//updateCustomer(number.substr(19,10))
+	}
+
+	bool findCard(string findCardNumber){
+		ifstream	readFileStream;
+		string cardStatus;
+		readFileStream.open("Flow_CardInformation",ios::in);
+
+		while(!readFileStream.eof()){
+			readFileStream >> creditCard;
+			readFileStream >> cardStatus;
+		
+			if((findCardNumber == creditCard) && (cardStatus != "Used")){
+				//updateCardInfo(creditCard)
+				return true;
+			}
+		}
+		creditCard = '0';
+		return false;
 	}
 
 	void checkPhoneNumber(string phoneBuffer){
 		const string prefix[4] = {"601","602","603","604"};
 	
-		try{
+		try{//8766011234
 			if(phoneBuffer.length()!= 10 ){ //First checking the length,then the areacode then the prefix
 				throw runtime_error("Not a valid phone number");
 			}else if(phoneBuffer.substr(0,3) != "876"){

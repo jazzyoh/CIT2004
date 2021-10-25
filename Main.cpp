@@ -20,12 +20,15 @@ int main(){
 		cout << "digicel - Digicel" << endl;
 		cin >>section;
 
-		if(section == "Flow"){ //Needs error handling 
+		if(section == "flow"){ //Needs error handling 
 			cout << "add -Add customer\n" << endl;
+			cout << "create - Create Phone Card\n" <<endl;
 			cin >>section;
 			
 			if(section == "add"){
 				flow->addCustomer();
+			}else if(section == "create"){
+				flow->createPhoneCard();
 			}
 		}
 	}
@@ -35,7 +38,7 @@ int main(){
 		cin >> section;
 
 		if(section == "add"){
-			flow->addCredit(); //Is not working 
+			flow->addCredit(); // Update Is not working 
 		
 		}else if (section == "check"){ //Needs error handling
 			string search;
