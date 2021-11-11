@@ -59,7 +59,13 @@ public:
 			cout << "\nEnter Customer Number \nImportant Details\n"<<
 							"Area Code (876)\nPrefix (601,602,603,604): " ;
 			getline(cin,phoneBuffer);
-			checkPhoneNumber(phoneBuffer);
+			if(checkPhoneNumber(phoneBuffer)){
+				customer.setPhoneNumber(phoneBuffer);
+				customer.setCreditBalance(100);
+				saveCustomerDetails();
+				ServiceProvider::customer.incrementCustomer();
+				cout << "Customer Account was created and $100 was added" << endl;
+			}
 
 		}catch(runtime_error &err){
 				cerr << err.what() << endl;
@@ -68,12 +74,7 @@ public:
 				cerr << "A fatal error has occurred" << endl;
 				throw;
 		}
-		customer.setPhoneNumber(phoneBuffer);
-		customer.setCreditBalance(100);
-		saveCustomerDetails();
-		ServiceProvider::customer.incrementCustomer();
-		cout << "Customer Account was created and $100 was added" << endl;
-	}
+			}
 
 	void setCustomer(Customer customer){
 		this->customer = customer;
@@ -98,16 +99,14 @@ public:
 	}
 
 	void saveCustomerDetails(){
-		ofstream *fileStream;
-		Customer *customerObj = new Customer;
-		fileStream = new ofstream("Flow_Customers",ios::out|ios::app|ios::binary);
 
-		if(createCustomerFile(fileStream)){
-			fileStream->seekp(customer.getTrn()-1*sizeof(Customer));
-			fileStream->write(reinterpret_cast<const char *> (&customerObj),sizeof(Customer));
-			fileStream->close();
-		}
-		fileStream->close();
+		ofstream writeFileStream;
+		writeFileStream.open("Flow_Customers",ios::app);
+		writeFileStream << customer.getTrn() << "\t" <<customer.getLastName()
+							<< "\t" << customer.getAddress() << "\t" << customer.getPhoneNumber() << "\t" 
+							<< customer.getCreditBalance() << endl;;
+		writeFileStream.close();
+		cout << "\n\nCustomer Infromation Saved\n" << endl;
 	}
 
 	void createPhoneCard(){
@@ -198,7 +197,10 @@ public:
 		}else if (creditCard.substr(7,1) == "5"){
 			customer.addCredit(500);
 		}
-		//updateCustomerInfromation
+		if(updateCustomerInfromation()){
+			cout << "Customer File updated"<< endl;
+		}
+
 	}
 
 	bool findCard(string findCardNumber){
@@ -306,15 +308,40 @@ public:
 		}
 	}
 	
-	void updateCustomerInfromation(){
+	bool updateCustomerInfromation(){
+		fstream fileStream;
+		fstream bufferStream;
+		string customerBuffer;
 
-		//Notice we should use a binary file to write and read customer and caard infromation 
-		//we need to indec the number of customers  and use that as a primary key eck tool
-		//to identfy the customer  this woull makke it easier checking the files  because
-		//if u look at the question sheet we need to display the total number of customer from bother service providers
-		//we arnt allowed to save the number of customers in the file directly so this would be a good workaround
-		//and also we coulse associate the same number of the cutomer to the respective card info.
-		//
+		try{
+			fileStream.open("Flow_Customers",ios::in | ios::out | ios:: app);
+			if(fileStream.fail())	
+				throw runtime_error("Unable to open Database");
+			bufferStream.open("Flow_Customers_Buffer",ios::in | ios::out | ios::app);
+			if(bufferStream.fail())	
+				throw runtime_error("Unable to create Temp File");
+			//Reading from the Flow_Customers file and move the data tot he buffer
+		while(!fileStream.eof()){
+			fileStream >> customerBuffer;
+			bufferStream << customerBuffer << "\t"; 
+				fileStream >> customerBuffer;
+			bufferStream << customerBuffer << "\t";
+				fileStream >> customerBuffer;
+			bufferStream << customerBuffer << "\t";
+				fileStream >> customerBuffer;
+			bufferStream << customerBuffer << "\t";
+				fileStream >> customerBuffer;
+		}
+					
+		}catch(runtime_error  &err){
+			fileStream.close();
+			return false;
+		}catch(...){
+			fileStream.close();
+			cerr << "An unexpected error has occurred \n"<< endl;
+		}
+		fileStream.close();
+		return true;
 	}
 
 	void dispay(){

@@ -18,6 +18,7 @@ int main(){
 	//serviceProvider->login(usrPass);
 	//serviceProvider->addCredit();
 	serviceProvider->addCustomer();
+	serviceProvider->addCredit();
 	serviceProvider->display();
 	serviceProvider->createPhoneCard();
 	serviceProvider->viewCustomerBase();

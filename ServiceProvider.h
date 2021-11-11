@@ -45,7 +45,7 @@ public:
 	virtual void addCredit() = 0;
 	virtual bool findCard(string) = 0;
 	virtual bool checkPhoneNumber(string) = 0;
-	//virtual void updateCustomer(Customer)=0;
+	virtual bool updateCustomerInfromation()=0;
 	//virtual void updateCardInfo(string){};
 	//virtual Customer getCustomer(){ return customer; };
 
