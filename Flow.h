@@ -90,6 +90,7 @@ public:
 				fileStream->write(reinterpret_cast <const char *> (customerObj),sizeof(Customer));
 			}
 		}catch(runtime_error &err){
+			fileStream->close();
 			return false;
 		}
 		fileStream->close();
@@ -106,6 +107,7 @@ public:
 			fileStream->write(reinterpret_cast<const char *> (&customerObj),sizeof(Customer));
 			fileStream->close();
 		}
+		fileStream->close();
 	}
 
 	void createPhoneCard(){
