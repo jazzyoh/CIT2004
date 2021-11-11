@@ -1,36 +1,40 @@
 #ifndef  CUSTOMER_H
 #define  CUSTOMER_H
 #include <iostream>
-#include <fstream>
 
 using namespace std;
 
 class Customer{
 private:
-	string trn;
+	int trn;
 	string lastName;
 	string address;
 	string phoneNumber;
 	int creditBalance;
+	static int totalNoCustomer;
 public:
 
 	Customer(){
-		trn = "null";
+		trn = 0;
 		lastName = "null";
 		address = "null";
 		phoneNumber = "null";
 		creditBalance = 100;
+		totalNoCustomer+=1;
 	}
 
-	Customer(string trn,string lastName,string address,
-				string phoneNumber,int creditBalance ){
+	Customer(int trn,string lastName,string address,
+				string phoneNumber,int creditBalance,int totalNoCustomer ){
 		this->trn = trn;
 		this->lastName = lastName;
 		this->address = address;
 		this->phoneNumber = phoneNumber;
 		this->creditBalance = creditBalance;
 	}
-
+	
+	void incrementCustomer(){
+		totalNoCustomer ++;
+	}
 	void addCredit(int credit){
 		creditBalance += credit;
 		cout << "\nCredit Added\n" << endl;
@@ -40,11 +44,11 @@ public:
 		cout << lastName << "'s"<< " Credit Balance is: " << creditBalance << "\n"<< endl;
 	}
 
-	void setTrn(string trn){
+	void setTrn(int trn){
 		this->trn = trn; 
 	}
 
-	string getTrn(){
+	int getTrn(){
 		return trn;
 	}
 
@@ -75,8 +79,15 @@ public:
 	int getCreditBalance(){
 		return creditBalance;
 	}
-};
+	void setTotalNoCustomer(int totalNoCustomer){
+		this->totalNoCustomer= totalNoCustomer; 
+	}
+	int getTotalNoCustomer(){
+		return totalNoCustomer;
+	}
 
+};
+int Customer::totalNoCustomer = 0;
 
 #endif
 

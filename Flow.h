@@ -3,19 +3,21 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include "ServiceProvider.h"
 
 using namespace std;
+namespace fs = filesystem;
 
 class Flow :public ServiceProvider{
 private:
-	 string parentCompany;
+	string parentCompany;
 public:
-	Flow(){
+	Flow():ServiceProvider(){
 		this->parentCompany = "null";
 	}
 
-	Flow(string parentCompany){
+	Flow(string parentCompany):ServiceProvider(){
 		this->parentCompany =  parentCompany;
 	}
 
@@ -28,39 +30,36 @@ public:
 	}
 
 	void addCustomer(){
-		ServiceProvider::addCustomer();
+		int trnBuffer;
 		string detailBuffer;
 		string addressBuffer ;
 		string phoneBuffer;
 		try{
-				cout << "\nEnter Customer Infromation:\n "<< endl;
-				cout << "\nEnter Trn: " ;
-				cin >>detailBuffer;
-				if(cin.fail()){
-					throw runtime_error("There was an input error");
-				}
+			cout << "\nEnter Customer Infromation:\n "<< endl;
+			cout << "\nEnter Trn: " ;
+			cin >>trnBuffer;
+			if(cin.fail()){
+				throw runtime_error("There was an input error");
+			}
+			customer.setTrn(trnBuffer);
+			cout << "\nEnter Last Name: ";
+			cin >> detailBuffer;
+			if(cin.fail()){
+				throw runtime_error("There was an input error");
+			}
+			customer.setLastName(detailBuffer);
+			cout << "\nEnter Customer Address: ";
+			cin.ignore(); //doesnt work otherwise 
+			getline(cin,addressBuffer);
+			customer.setAddress(addressBuffer);
+			if(cin.fail()){
+				throw runtime_error("There was an input error");
+			}
 
-				customer.setTrn(detailBuffer);
-				cout << "\nEnter Last Name: ";
-				cin >> detailBuffer;
-				if(cin.fail()){
-					throw runtime_error("There was an input error");
-				}
-				customer.setLastName(detailBuffer);
-
-				cout << "\nEnter Customer Address: ";
-				getline(cin,addressBuffer); //doesnt work otherwise 
-				getline(cin,addressBuffer);
-				customer.setAddress(addressBuffer);
-				if(cin.fail()){
-					throw runtime_error("There was an input error");
-				}
-
-				cout << "\nEnter Customer Number \nImportant Details\n"<<
-								"Area Code (876)\nPrefix (601,602,603,604): " ;
-				getline(cin,phoneBuffer);
-				
-				checkPhoneNumber(phoneBuffer);
+			cout << "\nEnter Customer Number \nImportant Details\n"<<
+							"Area Code (876)\nPrefix (601,602,603,604): " ;
+			getline(cin,phoneBuffer);
+			checkPhoneNumber(phoneBuffer);
 
 		}catch(runtime_error &err){
 				cerr << err.what() << endl;
@@ -72,24 +71,41 @@ public:
 		customer.setPhoneNumber(phoneBuffer);
 		customer.setCreditBalance(100);
 		saveCustomerDetails();
-		//ServiceProvider::totalNoCustomer++;
+		ServiceProvider::customer.incrementCustomer();
 		cout << "Customer Account was created and $100 was added" << endl;
-	
 	}
 
 	void setCustomer(Customer customer){
 		this->customer = customer;
 	}
 
-	void saveCustomerDetails(){
-		ofstream writeFileStream;
-		writeFileStream.open("Flow_Customers",ios::app);
+	bool createCustomerFile(ofstream *fileStream){
+		Customer *customerObj = new Customer;
+		try{
+			fileStream = new ofstream("Flow_Customers",ios::out | ios::app | ios::binary);		
+			if(fileStream->fail())
+				throw runtime_error("Couldn not create database\n");
+			for(int i =0;i<=MAX; i++){
+				fileStream->seekp((i-1)* sizeof(Customer));
+				fileStream->write(reinterpret_cast <const char *> (customerObj),sizeof(Customer));
+			}
+		}catch(runtime_error &err){
+			return false;
+		}
+		fileStream->close();
+		return true;
+	}
 
-		writeFileStream << customer.getTrn() << "\t" <<customer.getLastName()
-							<< "\t" << customer.getAddress() << "\t" << customer.getPhoneNumber() << "\t" 
-							<< customer.getCreditBalance() << endl;;
-		writeFileStream.close();
-		cout << "\n\nCustomer Infromation Saved\n" << endl;
+	void saveCustomerDetails(){
+		ofstream *fileStream;
+		Customer *customerObj = new Customer;
+		fileStream = new ofstream("Flow_Customers",ios::out|ios::app|ios::binary);
+
+		if(createCustomerFile(fileStream)){
+			fileStream->seekp(customer.getTrn()-1*sizeof(Customer));
+			fileStream->write(reinterpret_cast<const char *> (&customerObj),sizeof(Customer));
+			fileStream->close();
+		}
 	}
 
 	void createPhoneCard(){
@@ -100,22 +116,21 @@ public:
 	void saveCardTopUpDetails(){
 		ofstream writeFileStream;
 		writeFileStream.open("Flow_CardInformation",ios::app);
-
 		writeFileStream << creditCard << endl;
+		writeFileStream.close();
 		cout << "\n\nCard Infromation Saved\n"<<endl; 
 	}
 	
 	bool findCustomer(string search){
 		ifstream readFileStream;
 		string nameBuffer;
-		string trnBuffer;
+		int trnBuffer;
 		string addressBuffer;
 		string phoneBuffer;
 		int creditBuffer;
 		readFileStream.open("Flow_Customers",ios::in);
 		
 		while(!readFileStream.eof()){
-
 			readFileStream >> trnBuffer;
 			customer.setTrn(trnBuffer);
 			readFileStream >> nameBuffer;
@@ -127,6 +142,7 @@ public:
 			readFileStream >> creditBuffer; 
 			customer.setCreditBalance(creditBuffer);
 			if(phoneBuffer == search){
+				readFileStream.close();
 				return true;
 			}
 		}
@@ -134,7 +150,8 @@ public:
 		customer.setCreditBalance(0);
 		customer.setLastName("null");
 		customer.setPhoneNumber("null");
-		customer.setTrn("null");
+		customer.setTrn(0);
+		readFileStream.close();
 		return  false;
 	}
 
@@ -147,20 +164,20 @@ public:
 			cout << "\n\nEnter Credit Number\n" <<
 					"Important Details\n" <<
 					"*121*[card number]*[phone number]#: ";
-			getline(cin,number);
-			getline(cin,number);
+			cin >> number;
 
 			if(cin.fail()){
 				throw runtime_error("\nValue not Expected\n");
 			}else if(number.length()!=30){
 				throw runtime_error("Invaild Input\n\nPlease Follow Outline\n");
 			}else if(number.substr(0,5)!= sign){
+				cout << number.substr(0,5);
 				throw runtime_error("\nIncorrect Sign\n");
-			}else if(findCard(number.substr(5,13)) == false){
+			}else if(findCard(number.substr(5,13)) == false && number.substr(18,1) == "*"){
 				throw runtime_error("\nCard Not Valid\n");
 			}else if(findCustomer(number.substr(19,10)) == false){
 				throw runtime_error("\nCustomer Number not found\n");
-			}else if (number.substr(29,0) != "#"){
+			}else if (number.substr(29,1) != "#"){
 				throw runtime_error("# Expected at the end ");
 			}
 
@@ -170,16 +187,16 @@ public:
 			cerr << "A fatal error has occurred "<< endl;
 		}
 
-		if(creditCard.substr(7,0) == "0"){
+		if(creditCard.substr(7,1) == "0"){
 			customer.addCredit(1000);
-		}else if (creditCard.substr(7,0) == "1"){
+		}else if (creditCard.substr(7,1) == "1"){
 			customer.addCredit(100);
-		}else if (creditCard.substr(7,0) == "2"){
+		}else if (creditCard.substr(7,1) == "2"){
 			customer.addCredit(200);
-		}else if (creditCard.substr(7,0) == "5"){
+		}else if (creditCard.substr(7,1) == "5"){
 			customer.addCredit(500);
 		}
-		//updateCustomer(number.substr(19,10))
+		//updateCustomerInfromation
 	}
 
 	bool findCard(string findCardNumber){
@@ -192,15 +209,17 @@ public:
 			readFileStream >> cardStatus;
 		
 			if((findCardNumber == creditCard) && (cardStatus != "Used")){
+				readFileStream.close();
 				//updateCardInfo(creditCard)
 				return true;
 			}
 		}
 		creditCard = '0';
+		readFileStream.close();
 		return false;
 	}
 
-	void checkPhoneNumber(string phoneBuffer){
+	bool checkPhoneNumber(string phoneBuffer){
 		const string prefix[4] = {"601","602","603","604"};
 	
 		try{//8766011234
@@ -212,13 +231,93 @@ public:
 							phoneBuffer.substr(3,3)!=prefix[2] && phoneBuffer.substr(3,3)!=prefix[3]){
 					throw runtime_error("Prefix not registered");
 				}
-			}catch(runtime_error &err){
-					cerr << err.what() << endl;
-					throw;
-			}catch(...){
-					cerr << "A fatal error has occurred" << endl;
-					throw;
+		}catch(runtime_error &err){
+			return false;		
+		}catch(...){
+				cerr << "A fatal error has occurred" << endl;
+		}
+		return true;
+	}
+
+	bool login(string usrPass){
+		const string password = "TheWayIFlow2021";
+
+		if(usrPass == password){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	void viewCustomerBase(){
+		ifstream fileStream;
+		string customerBuffer;
+		try{
+			fileStream.open("Flow_Customers",ios::in);
+			if(fileStream.fail()){
+				throw runtime_error ("Unable to open Database") ;
 			}
+			while(!fileStream.eof()){
+				fileStream >> customerBuffer;
+				cout << customerBuffer << " ";
+				fileStream >> customerBuffer;
+				cout << customerBuffer << " ";
+				fileStream >> customerBuffer;
+				cout << customerBuffer << " ";
+				fileStream >> customerBuffer;
+				cout << customerBuffer << " ";
+				fileStream >> customerBuffer;
+				cout << "\n";
+			}
+			fileStream.close();
+		}catch(runtime_error &err){
+			fileStream.close();
+			cout<< err.what() <<endl;
+		}catch(...){
+			fileStream.close();
+			cerr << "An unexpected error has occurred \n"<< endl;
+		}
+	}
+
+	void viewAllPhoneCredit(){
+		ifstream fileStream;
+		string customerBuffer;
+		try{
+			fileStream.open("Flow_Customers",ios::in);
+			if(fileStream.fail()){
+				throw runtime_error ("Unable to open Database") ;
+			}
+			while(!fileStream.eof()){
+				fileStream >> customerBuffer;
+				cout << customerBuffer << "  ";
+				fileStream >> customerBuffer;
+				cout << customerBuffer << "  ";
+				cout << "\n";
+			}
+			fileStream.close();
+		}catch(runtime_error &err){
+			fileStream.close();
+			cout<< err.what() <<endl;
+		}catch(...){
+			fileStream.close();
+			cerr << "An unexpected error has occurred \n"<< endl;
+		}
+	}
+	
+	void updateCustomerInfromation(){
+
+		//Notice we should use a binary file to write and read customer and caard infromation 
+		//we need to indec the number of customers  and use that as a primary key eck tool
+		//to identfy the customer  this woull makke it easier checking the files  because
+		//if u look at the question sheet we need to display the total number of customer from bother service providers
+		//we arnt allowed to save the number of customers in the file directly so this would be a good workaround
+		//and also we coulse associate the same number of the cutomer to the respective card info.
+		//
+	}
+
+	void dispay(){
+		ServiceProvider::display();
+		cout << "\nParent Company: " <<  parentCompany;
 	}
 
 };

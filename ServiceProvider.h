@@ -1,6 +1,6 @@
 #ifndef  SERVICEPROVIDER_H
 #define  SERVICEPROVIDER_H
-
+#define MAX 256
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -14,42 +14,38 @@ class ServiceProvider: public exception{
 private:
 	string companyId;
 	string companyAddress;
-	static int totalNoCustomer;
-	string password;	
 protected:
 	Customer customer;
 	string creditCard;
 public:
-
 	ServiceProvider(){
 		companyId = "null";
 		companyAddress = "null";
-		password = "null";
 		creditCard = '0';
-		totalNoCustomer+=1;
 	}
 
 	ServiceProvider(string companyId,string companyAddress,string password,string creditCard, int totalNoCustomer, Customer *customer){
 		this->companyAddress = companyId;
-		this->password = password;
-		this->totalNoCustomer = totalNoCustomer;
 		this->creditCard = '0';
 		this->customer.setTrn(customer->getTrn());
 		this->customer.setLastName(customer->getLastName());
 		this->customer.setAddress(customer->getAddress());
 		this->customer.setPhoneNumber(customer->getPhoneNumber());
+		this->customer.setTotalNoCustomer(customer->getTotalNoCustomer());
 	}
 
 	//virtual void viewCompanyInfo();
-	//virtual void viewAllPhoneCredit();
-	bool findCustomer(string);
-	virtual void addCustomer(){totalNoCustomer++;};
-	//virtual void viewCustomer();
-	void saveCustomerDetails();
-	void saveCardTopUpDetails();
-	void addCredit();
-	bool findCard(string);
-	//virtual void updateCustomer(string){};
+	virtual void viewAllPhoneCredit()=0;
+	virtual bool findCustomer(string) = 0;
+	virtual void addCustomer() = 0;
+	virtual bool login(string) = 0;
+	virtual void viewCustomerBase() = 0;
+	virtual void saveCustomerDetails() = 0;
+	virtual void saveCardTopUpDetails() = 0;
+	virtual void addCredit() = 0;
+	virtual bool findCard(string) = 0;
+	virtual bool checkPhoneNumber(string) = 0;
+	//virtual void updateCustomer(Customer)=0;
 	//virtual void updateCardInfo(string){};
 	//virtual Customer getCustomer(){ return customer; };
 
@@ -72,7 +68,6 @@ public:
 				throw runtime_error("Value not Expected");
 			else if(choice != 1 && choice != 2 &&  choice != 3 && choice != 4 )
 				throw -1;
-
 			else{
 				int sentinel;
 				if(choice == 4)
@@ -102,28 +97,18 @@ public:
 			cerr << "A fatal error has occurred "<< endl;
 			return;
 		}
-		
 	}
 
 	int viewTotalNumberOfCustomer(){//Could be overridden or maybe it should show all customers from each base 
 		cout <<"Total Number of Customers: are\n\n"<< endl;
-		return this->totalNoCustomer;
-	}
-
-
-	void setPassword(string password){
-		this->password = password;
-	}
-
-	virtual string getPassword(){
-		return password;
+		return customer.getTotalNoCustomer();
 	}
 
 	void setCompanyId(string companyId){
 		this->companyId = companyId;
 	}
 
-	virtual string getCompanyId(){
+	string getCompanyId(){
 		return companyId;
 	}
 
@@ -131,31 +116,44 @@ public:
 		this->companyAddress = companyAddress;
 	}
 	
-	virtual string getComapnyAddress(){
+	string getComapnyAddress(){
 		return companyAddress;
 	}
-	virtual string getCustomerName(){
+	string getCustomerName(){
 		return customer.getLastName();	
 	}
-	virtual string getCustomerTrn(){
-		return customer.getTrn();
-	}
-	virtual string getCustomerPhone(){
+	
+	string getCustomerAddress(){
 		return customer.getAddress();
 	}
-	virtual int getCustomerBalance(){
+
+	int getCustomerTrn(){
+		return customer.getTrn();
+	}
+	string getCustomerPhone(){
+		return customer.getAddress();
+	}
+	int getCustomerBalance(){
 		return customer.getCreditBalance();
 	}
+	Customer getCustomer(){
+		return customer;
+	}
 
-//	void setPrefix(string prefix){
-//		this->prefix = prefix;
-//	}
+	virtual void display(){
+		cout <<  "Company Id: " << companyId;
+		cout <<  "companyAddress: " <<  companyAddress;
+		cout <<  "\nCustomer Trn: " << getCustomerTrn();
+		cout <<  "\nCustomer lastName: " << getCustomerName();
+		cout <<  "\nCustomer Address: " << getCustomerAddress();
+		cout <<  "\nCustomer phoneNumber: " << getCustomerPhone();
+		cout <<  "\nCustomer creditBalance: " << getCustomerBalance();
+	}
 
-//	string getPrefix(){
-//		return prefix;
-//	}
+
+	virtual ~ServiceProvider(){};
 };
 
-int ServiceProvider::totalNoCustomer = 0;
+
 
 #endif
